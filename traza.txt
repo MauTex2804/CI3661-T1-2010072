@@ -1,0 +1,71 @@
+Traza del Problema 7 - Carnet 2010072
+d = [0, 0, 7, 2]
+
+(a) foldr (-) 0 d
+
+foldr (-) 0 [0, 0, 7, 2]
+= 0 - (foldr (-) 0 [0, 7, 2])
+= 0 - (0 - (foldr (-) 0 [7, 2]))
+= 0 - (0 - (7 - (foldr (-) 0 [2])))
+= 0 - (0 - (7 - (2 - (foldr (-) 0 []))))
+= 0 - (0 - (7 - (2 - 0)))
+= 0 - (0 - (7 - 2))
+= 0 - (0 - 5)
+= 0 - (-5)
+= 5
+
+Resultado (a): 5
+
+
+(b) foldl (-) 0 d
+
+foldl (-) 0 [0, 0, 7, 2]
+= foldl (-) (0 - 0) [0, 7, 2]
+= foldl (-) 0 [0, 7, 2]
+= foldl (-) (0 - 0) [7, 2]
+= foldl (-) 0 [7, 2]
+= foldl (-) (0 - 7) [2]
+= foldl (-) (-7) [2]
+= foldl (-) (-7 - 2) []
+= foldl (-) (-9) []
+= -9
+
+Resultado (b): -9
+
+
+(c) miFoldl (-) 0 [0, 0] usando mi definicion:
+    miFoldl f z xs = foldr paso id xs z
+    donde paso x g = \acc -> g (f acc x)
+
+miFoldl (-) 0 [0, 0]
+= foldr paso id [0, 0] 0
+
+foldr paso id [0, 0]
+= paso 0 (foldr paso id [0])
+= paso 0 (paso 0 (foldr paso id []))
+= paso 0 (paso 0 id)
+
+paso 0 (paso 0 id)
+= \acc -> (paso 0 id) ((-) acc 0)
+= \acc -> (\acc2 -> id ((-) acc2 0)) ((-) acc 0)
+= \acc -> id ((-) ((-) acc 0) 0)
+= \acc -> ((-) ((-) acc 0) 0)
+
+Aplicando a z = 0:
+(\acc -> ((-) ((-) acc 0) 0)) 0
+= ((-) ((-) 0 0) 0)
+= ((-) 0 0)
+= 0
+
+Resultado (c): 0
+
+
+(d) Explicacion
+
+(a) y (b) dan distinto porque foldr agrupa las operaciones por la
+derecha y foldl por la izquierda. La resta no es asociativa, asi que
+0 - (0 - (7 - (2 - 0))) no es igual a (((0 - 0) - 7) - 2).
+
+Para que foldr op z xs == foldl op z xs para toda lista finita xs, se necesita
+que op sea asociativa y que z sea su elemento neutro, o sea, que
+(op, z) sea un monoide. Ejemplo: (+) con 0. La resta no cumple.
